@@ -8,6 +8,7 @@ public class NewBehaviourScript : MonoBehaviour {
 	void Start () {
 		print("Microsoft is a big poop");
 		print("first dumb change");
+		print("added something else");
 	}
 	
 	// Update is called once per frame
