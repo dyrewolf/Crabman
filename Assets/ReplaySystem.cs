@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class ReplaySystem : MonoBehaviour {
 
-	private const int bufferFrames = 1000;
+	private const int bufferFrames = 750;
 	private MyKeyFrame[] keyFrames = new MyKeyFrame [bufferFrames];
 	private Rigidbody rigidBody;
 	private GameManager manager;
+	private int frameStop = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -18,18 +20,36 @@ public class ReplaySystem : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (manager.recording) {
+
 			Record ();
 		} else {
 			PlayBack ();
 		}
+		if(CrossPlatformInputManager.GetButton("Fire1") ){
+			frameStop = Time.frameCount;
+		}
 	}
 
 	void PlayBack () {
+
 		rigidBody.isKinematic = true;
-		int frame = (1000 - Time.frameCount) % bufferFrames ;
-		print ("Reading frame " + frame);
-		transform.position = keyFrames [frame].position;
-		transform.rotation = keyFrames [frame].rotation;
+		print ("Frame stop " + frameStop);
+
+		//if (Time.frameCount < bufferFrames) {
+			while (Time.frameCount < frameStop) {
+				int frame = Time.frameCount % bufferFrames; 
+				transform.position = keyFrames [frame].position;
+				transform.rotation = keyFrames [frame].rotation;
+				print ("Reading frame " + frame);
+				print ("Frame stop " + frameStop);
+			}
+		//}else{
+		//	int frame = Time.frameCount % bufferFrames; 
+		//	print ("Reading frame " + frame);
+		//	transform.position = keyFrames [frame].position;
+		//	transform.rotation = keyFrames [frame].rotation;
+		//}
+
 	}
 
 	void Record ()
@@ -40,6 +60,10 @@ public class ReplaySystem : MonoBehaviour {
 		print ("Writing frame " + frame);
 		keyFrames [frame] = new MyKeyFrame (time, transform.position, transform.rotation);
 	}
+
+
+
+
 }
 
 /// <summary>
